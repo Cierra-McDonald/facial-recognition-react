@@ -5,10 +5,10 @@ export default class Rank extends Component {
         return (
             <div>
                 <div className='white f3'>
-                    {'Cierra, your current rank is...'}
+                    {`Hey ${this.props.name}, your current entry is ...`}
                 </div>
                 <div className='white f1'>
-                    {'#3'}
+                    {`${this.props.entries}`}
                 </div>
             </div>
         )
