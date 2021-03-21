@@ -7,13 +7,7 @@ import Rank from './components/Rank/Rank'
 import Particles from 'react-particles-js';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition'
 import Register from './components/Register/Register'
-
-import Clarifai from 'clarifai';
 import SignIn from './components/SignIn/SignIn';
-
-const app = new Clarifai.App({
-  apiKey: '6adb3b5cbeb54cd3b14d5605dc3ed5d3',
- });
 
 
 const particleOptions = {
@@ -29,25 +23,24 @@ const particleOptions = {
   }
 }
 
+const initialState = { 
+  input: '',
+  imageUrl: '',
+  box: {},
+  route: 'signin',
+  isSignedIn: false,
+  user: { 
+    id: '',
+    name: '',
+    email: '',
+    entries: 0,
+    joined: ''
+  }
+}
 export default class App extends Component {
   constructor() { 
     super();
-    this.state = {
-
-        input: '',
-        imageUrl: '',
-        box: {},
-        route: 'signin',
-        isSignedIn: false,
-        user: { 
-          id: '',
-          name: '',
-          email: '',
-          entries: 0,
-          joined: ''
-
-        }
-    }
+    this.state = initialState;
   }
 
   loadUser = (data) => { 
@@ -90,17 +83,19 @@ export default class App extends Component {
 
   onButtonSubmit = (e) => { 
    
-    this.setState({
-      imageUrl: this.state.input
-    });
+    this.setState({imageUrl: this.state.input});
 
-    app.models
-    .predict(
-      Clarifai.FACE_DETECT_MODEL,
-       this.state.input)
+    fetch('https://young-badlands-76253.herokuapp.com/imageurl', { 
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        input: this.state.input
+      })
+    })
+      .then(response => response.json())
       .then(response => {
         if (response) { 
-          fetch('http://localhost:3000/image', { 
+          fetch('https://young-badlands-76253.herokuapp.com/image', { 
             method: 'put',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -112,6 +107,9 @@ export default class App extends Component {
         .then(count => { 
           this.setState(Object.assign(this.state.user, { entries: count}))
         })
+        .catch(console.log)
+
+
       }
         this.displayRecognitionBox(this.calculateFaceLocation(response))
     })  
@@ -121,7 +119,7 @@ export default class App extends Component {
 
   onRouteChange = (route) => { 
     if (route === 'signout') {
-      this.setState({ isSignedIn: false })
+      this.setState(initialState);
     } else if ( route === 'home') { 
       this.setState({isSignedIn: true})
     }

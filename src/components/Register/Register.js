@@ -31,7 +31,7 @@ export default class Register extends Component {
 
     onSubmitForm = (e) => { 
         e.preventDefault();
-        fetch('http://localhost:3000/register', {
+        fetch('https://young-badlands-76253.herokuapp.com/register', {
             method: 'post',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -42,7 +42,7 @@ export default class Register extends Component {
         }) 
         .then(response => response.json())
         .then(user => { 
-            if (user) { 
+            if (user.id) { 
                 this.props.loadUser(user);
                 this.props.onRouteChange('home');
             }
